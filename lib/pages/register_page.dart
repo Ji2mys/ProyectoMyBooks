@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_books/repositories/users_repository.dart';
+import '../models/user.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -7,12 +9,12 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-enum Gender { male, female }
-
 class _RegisterPageState extends State<RegisterPage> {
+  UsersRepository usersRepository = UsersRepository();
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _pass = TextEditingController();
+  final TextEditingController _repeatPass = TextEditingController();
   Gender _gender = Gender.male;
   final Map<String, bool> _userGenres = {
     "fantasy": false,
@@ -29,6 +31,29 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     }
     return false;
+  }
+
+  void saveUser(User user) async {
+    var result = await usersRepository.registerUser(user.email, user.password);
+    if (result == true) {
+      showSnackBar("User successfully registered");
+    } else {
+      showSnackBar("The register failed");
+    }
+  }
+
+  void showSnackBar(String message) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: SnackBarAction(
+            label: "Close",
+            onPressed: () => scaffold.hideCurrentSnackBar(),
+          ),
+          duration: const Duration(seconds: 10),
+        )
+    );
   }
 
   @override
@@ -82,6 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   height: 16,
                 ),
                 TextFormField(
+                  controller: _repeatPass,
                   obscureText: true,
                   decoration:
                       const InputDecoration(labelText: 'Repeat Password'),
@@ -170,9 +196,18 @@ class _RegisterPageState extends State<RegisterPage> {
                       setState(() {
                         _userData =
                         "Name: ${_name.text}."
+                            "\nPassword: ${_pass.text}"
+                            "\nRepeat: ${_repeatPass.text}"
                             "\nGenres: $_userGenres."
                             "\nGender: ${_gender.name}.";
                       });
+                      if (_pass.text == _repeatPass.text) {
+                        User newUser = User(_name.text, _email.text, _pass.text,
+                            _gender, _userGenres, DateTime(2000));
+                        saveUser(newUser);
+                      } else {
+                        showSnackBar("Passwords must match");
+                      }
                     },
                     child: const Text('Register'),
                   ),
