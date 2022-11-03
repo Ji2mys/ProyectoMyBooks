@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_books/pages/login_page.dart';
 import 'package:my_books/repositories/users_repository.dart';
 import '../models/user.dart';
 
@@ -34,20 +35,25 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void saveUser(User user) async {
-    var result = await usersRepository.registerUser(user.email, user.password);
-    String msg = "";
-    if (result == "invalid-email") {
-      msg = "The email is wrong";
-    } else if (result == "weak-password") {
-      msg = "The password must have 6 characters or more";
-    } else if (result == "email-already-in-use") {
-      msg = "There is already an account with that email";
-    } else if (result == "network-request-failed") {
-      msg = "Check your network connection";
+    if (_email.text.isEmpty || _pass.text.isEmpty) {
+      showSnackBar("Empty fields, try again");
     } else {
-      msg = "Successful register";
+      var result = await usersRepository.registerUser(user.email, user.password);
+      String msg = "";
+      if (result == "invalid-email") {
+        msg = "The email is wrong";
+      } else if (result == "weak-password") {
+        msg = "The password must have 6 characters or more";
+      } else if (result == "email-already-in-use") {
+        msg = "There is already an account with that email";
+      } else if (result == "network-request-failed") {
+        msg = "Check your network connection";
+      } else {
+        msg = "Successful register";
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+      }
+      showSnackBar(msg);
     }
-    showSnackBar(msg);
   }
 
   void showSnackBar(String message) {

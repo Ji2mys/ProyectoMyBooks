@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_books/main.dart';
 import 'package:my_books/pages/register_page.dart';
+import 'package:my_books/repositories/users_repository.dart';
 
 import '../models/user.dart';
 
@@ -11,6 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final usersRepository = UsersRepository();
   final _userInput = TextEditingController();
   final _passInput = TextEditingController();
   String _userData = '';
@@ -23,6 +26,42 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
     return false;
+  }
+
+  void _validateUser() async {
+    if (_userInput.text.isEmpty || _passInput.text.isEmpty) {
+      showSnackBar("You must enter email and password");
+    } else {
+      var result = await usersRepository.loginUser(_userInput.text, _passInput.text);
+      String msg = "";
+      if (result == "invalid-email") {
+        msg = "Invalid email";
+      } else if (result == "wrong-password") {
+        msg = "Wrong email or password";
+      } else if (result == "network-request-failed") {
+        msg = "Check your network connection";
+      } else if (result == "user-not-found") {
+        msg = "There is no user with that email";
+      } else {
+        msg = "Welcome";
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home Page")));
+      }
+      showSnackBar(msg);
+    }
+  }
+
+  void showSnackBar(String message) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: SnackBarAction(
+            label: "Close",
+            onPressed: () => scaffold.hideCurrentSnackBar(),
+          ),
+          duration: const Duration(seconds: 10),
+        )
+    );
   }
 
   @override
@@ -84,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                         _userData =
                             'User: "${_userInput.text}". Pass: "${_passInput.text}". Valid: ${_userInput.text == appUser.email && _passInput.text == appUser.password}.';
                       });
+                      _validateUser();
                     },
                     child: const Text('Login'),
                   ),
