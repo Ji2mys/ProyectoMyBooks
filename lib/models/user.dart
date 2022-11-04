@@ -1,6 +1,7 @@
 enum Gender { male, female }
 
 class User {
+  String uid = "";
   String _name = "";
   String _email = "";
   String _password = "";
@@ -8,7 +9,7 @@ class User {
   Map<String, bool> _favoriteGenres = {};
   DateTime _bornDate = DateTime.now();
 
-  User(this._name, this._email, this._password, this._gender, this._favoriteGenres, this._bornDate);
+  User(this.uid, this._name, this._email, this._password, this._gender, this._favoriteGenres, this._bornDate);
 
   User.fromJson(Map<String, dynamic> json) {
     _name = json["name"];
@@ -21,10 +22,11 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      "uid": uid,
       "name": name,
       "email": email,
-      "password": password,
-      "gender": gender,
+      //"password": password,
+      "gender": gender.name,
       "favorite_genres": favoriteGenres,
       "born_date": bornDate
     };

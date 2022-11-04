@@ -50,6 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
         msg = "Check your network connection";
       } else {
         msg = "Successful register";
+        user.uid = result ?? "";
+        usersRepository.addUserToDatabase(user);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
       }
       showSnackBar(msg);
@@ -216,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             "\nGender: ${_gender.name}.";
                       });
                       if (_pass.text == _repeatPass.text) {
-                        User newUser = User(_name.text, _email.text, _pass.text,
+                        User newUser = User("", _name.text, _email.text, _pass.text,
                             _gender, _userGenres, DateTime(2000));
                         saveUser(newUser);
                       } else {

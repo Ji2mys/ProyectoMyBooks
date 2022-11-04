@@ -3,8 +3,6 @@ import 'package:my_books/main.dart';
 import 'package:my_books/pages/register_page.dart';
 import 'package:my_books/repositories/users_repository.dart';
 
-import '../models/user.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -17,7 +15,6 @@ class _LoginPageState extends State<LoginPage> {
   final _userInput = TextEditingController();
   final _passInput = TextEditingController();
   String _userData = '';
-  User appUser = User("Karl", "karl@gmail.com", "karlkarlkarlkarl", Gender.male, {"fantasy":true, "terror":false, "scienceFiction":true, "adventure":true}, DateTime(2000));
 
   bool _isValidEmail(String? email) {
     if (email != null) {
@@ -121,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       setState(() {
                         _userData =
-                            'User: "${_userInput.text}". Pass: "${_passInput.text}". Valid: ${_userInput.text == appUser.email && _passInput.text == appUser.password}.';
+                            'User: "${_userInput.text}". Pass: "${_passInput.text}".';
                       });
                       _validateUser();
                     },
